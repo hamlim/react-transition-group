@@ -1,7 +1,7 @@
 {
-  "name": "react-transition-group",
+  "name": "@matthamlin/react-transition-group",
   "version": "2.5.0",
-  "description": "A react component toolset for managing animations",
+  "description": "A fork of react-transition-group, using modern react patterns",
   "main": "lib/index.js",
   "scripts": {
     "test": "npm run lint && npm run testonly",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/reactjs/react-transition-group.git"
+    "url": "https://github.com/hamlim/react-transition-group.git"
   },
   "keywords": [
     "react",
@@ -37,9 +37,9 @@
   "author": "",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/reactjs/react-transition-group/issues"
+    "url": "https://github.com/hamlim/react-transition-group/issues"
   },
-  "homepage": "https://github.com/reactjs/react-transition-group#readme",
+  "homepage": "https://github.com/hamlim/react-transition-group#readme",
   "jest": {
     "testRegex": "-test\\.js",
     "setupFiles": [
@@ -50,8 +50,8 @@
     ]
   },
   "peerDependencies": {
-    "react": ">=15.0.0",
-    "react-dom": ">=15.0.0"
+    "react": "16.6.3",
+    "react-dom": "16.6.3"
   },
   "dependencies": {
     "dom-helpers": "^3.3.1",

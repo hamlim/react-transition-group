@@ -1,19 +1,18 @@
-import React from 'react';
-import { mount } from 'enzyme';
+import React from 'react'
+import { mount } from 'enzyme'
 
-import CSSTransition from '../src/CSSTransition';
+import CSSTransition from '../src/CSSTransition'
 
 jasmine.addMatchers({
   toExist: () => ({
     compare: actual => ({
       pass: actual != null,
-    })
-  })
-});
+    }),
+  }),
+})
 
 describe('CSSTransition', () => {
-
-  it('should flush new props to the DOM before initiating a transition', (done) => {
+  it('should flush new props to the DOM before initiating a transition', done => {
     mount(
       <CSSTransition
         in={false}
@@ -25,59 +24,57 @@ describe('CSSTransition', () => {
           done()
         }}
       >
-        <div></div>
-      </CSSTransition>
+        {(status, childProps, setRef) => <div {...childProps} ref={setRef} />}
+      </CSSTransition>,
     )
-    .tap(inst => {
-
-      expect(inst.getDOMNode().classList.contains('test-class')).toEqual(false)
-    })
-    .setProps({
-      in: true,
-      className: 'test-class'
-    })
-  });
+      .tap(inst => {
+        expect(inst.getDOMNode().classList.contains('test-class')).toEqual(
+          false,
+        )
+      })
+      .setProps({
+        in: true,
+        className: 'test-class',
+      })
+  })
 
   describe('entering', () => {
-    let instance;
+    let instance
 
     beforeEach(() => {
       instance = mount(
-        <CSSTransition
-          timeout={10}
-          classNames="test"
-        >
-          <div/>
-        </CSSTransition>
+        <CSSTransition timeout={10} classNames="test">
+          {(status, childProps, setRef) => <div ref={setRef} />}
+        </CSSTransition>,
       )
-    });
+    })
 
     it('should apply classes at each transition state', done => {
-      let count = 0;
+      let count = 0
 
       instance.setProps({
         in: true,
 
         onEnter(node) {
-          count++;
-          expect(node.className).toEqual('test-enter');
+          count++
+          expect(node.className).toEqual('test-enter')
         },
 
-        onEntering(node){
-          count++;
-          expect(node.className).toEqual('test-enter test-enter-active');
+        onEntering(node) {
+          count++
+          expect(node.className).toEqual('test-enter test-enter-active')
         },
 
-        onEntered(node){
-          expect(node.className).toEqual('test-enter-done');
-          expect(count).toEqual(2);
-          done();
-        }
-      });
-    });
+        onEntered(node) {
+          expect(node.className).toEqual('test-enter-done')
+          expect(count).toEqual(2)
+          done()
+        },
+      })
+    })
 
     it('should apply custom classNames names', done => {
-      let count = 0;
+      let count = 0
       instance = mount(
         <CSSTransition
           timeout={10}
@@ -87,73 +84,69 @@ describe('CSSTransition', () => {
             enterDone: 'custom-super-done',
           }}
         >
-          <div/>
-        </CSSTransition>
-      );
+          {(status, childProps, setRef) => <div ref={setRef} />}
+        </CSSTransition>,
+      )
 
       instance.setProps({
         in: true,
 
-        onEnter(node){
-          count++;
-          expect(node.className).toEqual('custom');
+        onEnter(node) {
+          count++
+          expect(node.className).toEqual('custom')
         },
 
-        onEntering(node){
-          count++;
-          expect(node.className).toEqual('custom custom-super-active');
+        onEntering(node) {
+          count++
+          expect(node.className).toEqual('custom custom-super-active')
         },
 
-        onEntered(node){
-          expect(node.className).toEqual('custom-super-done');
-          expect(count).toEqual(2);
-          done();
-        }
-      });
-    });
-  });
+        onEntered(node) {
+          expect(node.className).toEqual('custom-super-done')
+          expect(count).toEqual(2)
+          done()
+        },
+      })
+    })
+  })
 
-  describe('exiting', ()=> {
-    let instance;
+  describe('exiting', () => {
+    let instance
 
     beforeEach(() => {
       instance = mount(
-        <CSSTransition
-          in
-          timeout={10}
-          classNames="test"
-        >
-          <div/>
-        </CSSTransition>
+        <CSSTransition in timeout={10} classNames="test">
+          {(status, childProps, setRef) => <div ref={setRef} />}
+        </CSSTransition>,
       )
-    });
+    })
 
     it('should apply classes at each transition state', done => {
-      let count = 0;
+      let count = 0
 
       instance.setProps({
         in: false,
 
-        onExit(node){
-          count++;
-          expect(node.className).toEqual('test-exit');
+        onExit(node) {
+          count++
+          expect(node.className).toEqual('test-exit')
         },
 
-        onExiting(node){
-          count++;
-          expect(node.className).toEqual('test-exit test-exit-active');
+        onExiting(node) {
+          count++
+          expect(node.className).toEqual('test-exit test-exit-active')
         },
 
-        onExited(node){
-          expect(node.className).toEqual('test-exit-done');
-          expect(count).toEqual(2);
-          done();
-        }
-      });
-    });
+        onExited(node) {
+          expect(node.className).toEqual('test-exit-done')
+          expect(count).toEqual(2)
+          done()
+        },
+      })
+    })
 
     it('should apply custom classNames names', done => {
-      let count = 0;
+      let count = 0
       instance = mount(
         <CSSTransition
           in
@@ -164,29 +157,29 @@ describe('CSSTransition', () => {
             exitDone: 'custom-super-done',
           }}
         >
-          <div/>
-        </CSSTransition>
-      );
+          {(status, childProps, setRef) => <div ref={setRef} />}
+        </CSSTransition>,
+      )
 
       instance.setProps({
         in: false,
 
-        onExit(node){
-          count++;
-          expect(node.className).toEqual('custom');
+        onExit(node) {
+          count++
+          expect(node.className).toEqual('custom')
         },
 
-        onExiting(node){
-          count++;
-          expect(node.className).toEqual('custom custom-super-active');
+        onExiting(node) {
+          count++
+          expect(node.className).toEqual('custom custom-super-active')
         },
 
-        onExited(node){
-          expect(node.className).toEqual('custom-super-done');
-          expect(count).toEqual(2);
-          done();
-        }
-      });
-    });
-  });
-});
+        onExited(node) {
+          expect(node.className).toEqual('custom-super-done')
+          expect(count).toEqual(2)
+          done()
+        },
+      })
+    })
+  })
+})

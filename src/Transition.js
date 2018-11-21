@@ -1,8 +1,10 @@
 import * as PropTypes from 'prop-types'
 import React from 'react'
-import ReactDOM from 'react-dom'
 import { polyfill } from 'react-lifecycles-compat'
-
+import {
+  Provider as TransitionGroupContextProvider,
+  Context,
+} from './TransitionGroupContext.js'
 import { timeoutsShape } from './utils/PropTypes'
 
 export const UNMOUNTED = 'unmounted'
@@ -107,13 +109,7 @@ export const EXITING = 'exiting'
  * > `CSSTransition`.
  */
 class Transition extends React.Component {
-  static contextTypes = {
-    transitionGroup: PropTypes.object,
-  }
-  static childContextTypes = {
-    transitionGroup: () => {},
-  }
-
+  static contextType = Context
   constructor(props, context) {
     super(props, context)
 
@@ -144,10 +140,8 @@ class Transition extends React.Component {
     this.state = { status: initialStatus }
 
     this.nextCallback = null
-  }
 
-  getChildContext() {
-    return { transitionGroup: null } // allows for nested Transitions
+    this.setRef = this.setRef.bind(this)
   }
 
   static getDerivedStateFromProps({ in: nextIn }, prevState) {
@@ -221,7 +215,7 @@ class Transition extends React.Component {
     if (nextStatus !== null) {
       // nextStatus will always be ENTERING or EXITING.
       this.cancelNextCallback()
-      const node = ReactDOM.findDOMNode(this)
+      const node = this.refNode
 
       if (nextStatus === ENTERING) {
         this.performEnter(node, mounting)
@@ -235,9 +229,10 @@ class Transition extends React.Component {
 
   performEnter(node, mounting) {
     const { enter } = this.props
-    const appearing = this.context.transitionGroup
-      ? this.context.transitionGroup.isMounting
-      : mounting
+    const appearing =
+      typeof this.context.isMounting === 'boolean'
+        ? this.context.isMounting
+        : mounting
 
     const timeouts = this.getTimeouts()
 
@@ -337,6 +332,10 @@ class Transition extends React.Component {
     }
   }
 
+  setRef(ref) {
+    this.refNode = ref
+  }
+
   render() {
     const status = this.state.status
     if (status === UNMOUNTED) {
@@ -361,13 +360,24 @@ class Transition extends React.Component {
     delete childProps.onExited
 
     if (typeof children === 'function') {
-      return children(status, childProps)
+      return (
+        <TransitionGroupContextProvider value={null}>
+          {children(status, childProps, this.setRef)}
+        </TransitionGroupContextProvider>
+      )
     }
 
     const child = React.Children.only(children)
-    return React.cloneElement(child, childProps)
+    return (
+      <TransitionGroupContextProvider value={null}>
+        {React.cloneElement(child, { ...childProps, setRef: this.setRef })}
+      </TransitionGroupContextProvider>
+    )
   }
 }
+
+// Name the function so it is clearer in the documentation
+function noop() {}
 
 Transition.propTypes = {
   /**
@@ -508,9 +518,6 @@ Transition.propTypes = {
    */
   onExited: PropTypes.func,
 }
-
-// Name the function so it is clearer in the documentation
-function noop() {}
 
 Transition.defaultProps = {
   in: false,

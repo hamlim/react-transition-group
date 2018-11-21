@@ -30,8 +30,8 @@ describe('Transition', () => {
           throw new Error('should not Enter')
         }}
       >
-        <div />
-      </Transition>
+        {(status, childProps, setRef) => <div ref={setRef} />}
+      </Transition>,
     )
 
     expect(wrapper.state('status')).toEqual(ENTERED)
@@ -46,21 +46,21 @@ describe('Transition', () => {
           throw Error('Animated!')
         }}
       >
-        <div />
-      </Transition>
+        {(status, childProps, setRef) => <div ref={setRef} />}
+      </Transition>,
     )
 
     mount(
       <Transition in appear timeout={0} onEnter={() => done()}>
-        <div />
-      </Transition>
+        {(status, childProps, setRef) => <div ref={setRef} />}
+      </Transition>,
     )
   })
 
   it('should pass filtered props to children', () => {
     class Child extends React.Component {
       render() {
-        return <div>child</div>
+        return <div ref={this.props.innerRef}>child</div>
       }
     }
     const child = mount(
@@ -82,11 +82,17 @@ describe('Transition', () => {
         onExiting={() => {}}
         onExited={() => {}}
       >
-        <Child />
-      </Transition>
+        {(status, { foo, bar }, setRef) => (
+          <Child {...{ foo, bar, innerRef: setRef }} />
+        )}
+      </Transition>,
     ).find(Child)
 
-    expect(child.props()).toEqual({ foo: 'foo', bar: 'bar' })
+    expect(child.props()).toEqual({
+      foo: 'foo',
+      bar: 'bar',
+      innerRef: expect.any(Function),
+    })
   })
 
   it('should allow addEndListener instead of timeouts', done => {
@@ -100,8 +106,8 @@ describe('Transition', () => {
           done()
         }}
       >
-        <div />
-      </Transition>
+        {(status, childProps, setRef) => <div ref={setRef} />}
+      </Transition>,
     )
 
     inst.setProps({ in: true })
@@ -124,8 +130,8 @@ describe('Transition', () => {
           done()
         }}
       >
-        <div />
-      </Transition>
+        {(status, childProps, setRef) => <div ref={setRef} />}
+      </Transition>,
     )
 
     inst.setProps({ in: true })
@@ -137,8 +143,8 @@ describe('Transition', () => {
     beforeEach(() => {
       wrapper = mount(
         <Transition timeout={10}>
-          <div />
-        </Transition>
+          {(status, childProps, setRef) => <div ref={setRef} />}
+        </Transition>,
       )
     })
 
@@ -197,8 +203,8 @@ describe('Transition', () => {
     beforeEach(() => {
       wrapper = mount(
         <Transition in timeout={10}>
-          <div />
-        </Transition>
+          {(status, childProps, setRef) => <div ref={setRef} />}
+        </Transition>,
       )
     })
 
@@ -270,7 +276,7 @@ describe('Transition', () => {
             timeout={10}
             {...props}
           >
-            <div />
+            {(status, childProps, setRef) => <div ref={setRef} />}
           </Transition>
         )
       }
@@ -289,7 +295,7 @@ describe('Transition', () => {
             expect(wrapper.getDOMNode()).toExist()
             done()
           }}
-        />
+        />,
       )
 
       expect(wrapper.instance().getStatus()).toEqual(UNMOUNTED)
@@ -315,7 +321,7 @@ describe('Transition', () => {
 
             done()
           }}
-        />
+        />,
       )
 
       expect(wrapper.getDOMNode()).not.toExist()
@@ -343,7 +349,7 @@ describe('Transition', () => {
             timeout={10}
             {...props}
           >
-            <div />
+            {(status, childProps, setRef) => <div ref={setRef} />}
           </Transition>
         )
       }
@@ -363,7 +369,7 @@ describe('Transition', () => {
 
             done()
           }}
-        />
+        />,
       ).instance()
 
       expect(wrapper.getStatus()).toEqual(UNMOUNTED)
@@ -383,7 +389,7 @@ describe('Transition', () => {
               done()
             })
           }}
-        />
+        />,
       ).instance()
 
       expect(wrapper.getStatus()).toEqual(ENTERED)

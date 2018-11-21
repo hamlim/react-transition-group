@@ -31,7 +31,9 @@ describe('TransitionGroup', () => {
     Child = function Child(props) {
       return (
         <Transition timeout={0} {...props} {...events}>
-          <span />
+          {(status, childProps, setRef) => (
+            <span {...childProps} ref={setRef} />
+          )}
         </Transition>
       )
     }
@@ -46,7 +48,7 @@ describe('TransitionGroup', () => {
     mount(
       <TransitionGroup component={FirstChild}>
         <Child />
-      </TransitionGroup>
+      </TransitionGroup>,
     )
   })
 
@@ -62,7 +64,7 @@ describe('TransitionGroup', () => {
     mount(
       <TransitionGroup>
         <Child ref={ref} />
-      </TransitionGroup>
+      </TransitionGroup>,
     )
 
     expect(ref).toHaveBeenCalled()
@@ -130,7 +132,7 @@ describe('TransitionGroup', () => {
       <Component>
         <Child key="child" />
       </Component>,
-      container
+      container,
     )
     // rendering the child leaving will call 'componentWillProps' which will trigger the
     // callback. This would throw an error previously.
@@ -167,7 +169,7 @@ describe('TransitionGroup', () => {
       <Component>
         <Child key="child" />
       </Component>,
-      container
+      container,
     )
     // make the child leave
     ReactDOM.render(<Component />, container)
@@ -179,8 +181,8 @@ describe('TransitionGroup', () => {
         <Component>
           <Child key="child" />
         </Component>,
-        container
-      )
+        container,
+      ),
     ).not.toThrow()
   })
 })
